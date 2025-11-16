@@ -1,5 +1,6 @@
 package com.example.product_catalog_service.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -22,8 +23,15 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getAllProducts() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAllProducts'");
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        FakeStoreDto[] fakeStoreDto = restTemplate
+                .getForEntity("https://fakestoreapi.com/products", FakeStoreDto[].class).getBody();
+        List<Product> products = new ArrayList<>();
+        for (FakeStoreDto fakeStoreDto2 : fakeStoreDto) {
+            products.add(getProduct(fakeStoreDto2));
+        }
+        return products;
+
     }
 
     @Override
@@ -49,9 +57,15 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public ProductDto createProduct(ProductDto productDto) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createProduct'");
+    public Product createProduct(ProductDto productDto) {
+        FakeStoreDto fakeStoreDto1 = new FakeStoreDto();
+        fakeStoreDto1.setTitle(productDto.getName());
+
+        RestTemplate restTemplate = restTemplateBuilder.build();
+        FakeStoreDto fakeStoreDto = restTemplate
+                .postForEntity("https://fakestoreapi.com/products", fakeStoreDto1, FakeStoreDto.class)
+                .getBody();
+        return getProduct(fakeStoreDto);
     }
 
 }

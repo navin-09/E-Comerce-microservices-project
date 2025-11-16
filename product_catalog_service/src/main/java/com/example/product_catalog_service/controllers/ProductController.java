@@ -5,10 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.product_catalog_service.dtos.ProductDto;
 import com.example.product_catalog_service.models.Product;
 import com.example.product_catalog_service.services.IProductService;
-import com.example.product_catalog_service.services.ProductService;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,20 +29,27 @@ public class ProductController {
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return null;
+
+        return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public Product getProduct(@PathVariable("id") Long productId) {
-        return productService.getProduct(productId);
-        
+    public ResponseEntity<Product> getProduct(@PathVariable("id") Long productId) {
+        try {
+            if (productId < 1) {
+                throw new IllegalArgumentException("Id cant be less than 1");
+            }
+            Product product = productService.getProduct(productId);
+            return new ResponseEntity<>(product, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
     }
 
     @PostMapping
-    public ProductDto createProduct(@RequestBody ProductDto productDto) {
-        System.out.println("*******===>" + productDto);
-        return productDto;
-
+    public Product createProduct(@RequestBody ProductDto productDto) {
+        return productService.createProduct(productDto);
     }
 
 }

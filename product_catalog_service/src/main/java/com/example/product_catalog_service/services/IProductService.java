@@ -11,6 +11,6 @@ public interface IProductService {
 
     public Product getProduct(Long productId);
 
-    public ProductDto createProduct(ProductDto productDto);
+    public Product createProduct(ProductDto productDto);
 
 }
